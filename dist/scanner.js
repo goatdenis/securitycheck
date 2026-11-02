@@ -77,7 +77,7 @@ export function scanEnvironment(scope) {
       `PublicKeyCredential in credentials.get: ${webauthn ? 'prisotna' : 'nista potrjena'}`, 'Ne preverjamo, ali imate nastavljen prijavni ključ, biometrijo ali fizični varnostni ključ.'),
     row('permissions', 'Vmesnik za spletna dovoljenja', 'Spletne funkcije', 'sliders', permissions ? 'verified' : 'unknown',
       permissions ? 'Permissions API je zaznan' : 'Vmesnik ni zaznan ali je omejen',
-      'Preverjena je podpora vmesniku. Dovoljenj za kamero, mikrofon in lokacijo ne zahtevamo in ne beremo.',
+      'Osnovni pregled preveri le prisotnost vmesnika. Stanje dovoljenj se bere samo v ločenem razširjenem pregledu z vašo privolitvijo; tipal ne vklopimo.',
       `navigator.permissions.query: ${permissions ? 'prisoten' : 'ni dostopen'}`, 'To ni pregled vseh dovoljenj ali nastavitev zasebnosti brskalnika.'),
     row('browser-updates', 'Aktualnost različice brskalnika', 'Posodobitve', 'refresh', 'unknown', 'Ni zanesljive primerjave s svežimi izdajami',
       'Aplikacija nima povezanega svežega vira izdaj za vaš kanal in platformo. Zato različice ne označi kot aktualne ali zastarele.',
@@ -104,7 +104,8 @@ export function summarize(results) {
 
 export function reportText(report) {
   return ['DEVICE SECURITY SCANNER — POROČILO', `Čas pregleda: ${report.checkedAt}`,
-    'To je omejen pregled podatkov brskalnika, ne ocena varnosti naprave.', '',
+    'To je omejen pregled podatkov brskalnika, ne ocena varnosti naprave.',
+    ...(report.extendedConsent ? [`Razširjeni pregled: ${report.extendedCheckedAt}`, `Izrecna privolitev: ${report.extendedConsent.acceptedAt}; obvestilo: ${report.extendedConsent.noticeVersion}`, `Izbrane skupine: ${report.extendedConsent.categories.join(', ')}`, 'Dovoljenje ne omogoči sistemskega dostopa. Nastavitve dovoljenj niso spremenjene.'] : []), '',
     ...report.results.flatMap(r => [`${STATUS[r.status]} — ${r.title}`, r.value, r.description, `Dokaz: ${r.evidence}`, `Omejitev / naslednji korak: ${r.limitation}`, '']),
     'Rezultati so bili ustvarjeni lokalno. Aplikacija jih ne pošilja na strežnik.'].join('\n');
 }
